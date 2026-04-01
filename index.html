@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow — Task Management App</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ==================== AUTH SCREEN ==================== -->
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="dot">
+          <svg viewBox="0 0 16 16"><path d="M2 2h5v5H2zm7 0h5v5H9zM2 9h5v5H2zm7 2h2v-2h2v2h-2v2H9zm2 0h2v2h-2z"/></svg>
+        </div>
+        <span>TaskFlow</span>
+      </div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('login')">Sign in</div>
+        <div class="auth-tab" onclick="switchTab('register')">Register</div>
+      </div>
+      <div class="auth-error" id="auth-err"></div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" value="demo@taskflow.app"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-pass" placeholder="••••••••" value="demo123"/>
+        </div>
+        <button class="btn-primary" onclick="doLogin()">Sign in</button>
+        <p class="demo-note">Demo credentials: demo@taskflow.app / demo123</p>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-form" style="display:none">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="reg-name" placeholder="Your full name"/>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="reg-pass" placeholder="Min 6 characters"/>
+        </div>
+        <button class="btn-primary" onclick="doRegister()">Create account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== APP SCREEN ==================== -->
+<div id="app-screen" style="display:none">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <div class="dot"></div>
+        <span>TaskFlow</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-label">Workspace</div>
+        <div class="nav-item active" onclick="setView('all', event)">
+          <svg class="ico" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h7a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+          </svg>
+          All tasks
+          <span class="nav-badge" id="badge-all">0</span>
+        </div>
+        <div class="nav-item" onclick="setView('today', event)">
+          <svg class="ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+          </svg>
+          Due today
+          <span class="nav-badge" id="badge-today" style="display:none">0</span>
+        </div>
+        <div class="nav-item" onclick="setView('inprogress', event)">
+          <svg class="ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+          </svg>
+          In progress
+        </div>
+        <div class="nav-item" onclick="setView('done', event)">
+          <svg class="ico" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+          Completed
+        </div>
+
+        <div class="nav-label" style="margin-top:12px">Categories</div>
+        <div class="nav-item" onclick="setView('cat-Work', event)">
+          <span class="cat-dot" style="background:var(--blue)"></span> Work
+        </div>
+        <div class="nav-item" onclick="setView('cat-Personal', event)">
+          <span class="cat-dot" style="background:var(--green)"></span> Personal
+        </div>
+        <div class="nav-item" onclick="setView('cat-Urgent', event)">
+          <span class="cat-dot" style="background:var(--red)"></span> Urgent
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="avatar" id="user-avatar">?</div>
+          <div class="user-info">
+            <div class="user-name" id="user-display">User</div>
+            <div class="user-role">Member</div>
+          </div>
+          <button class="logout-btn" onclick="doLogout()" title="Sign out">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <button class="menu-btn" onclick="openSidebar()">☰</button>
+        <h1 id="view-title">All tasks</h1>
+        <div class="rt-badge">
+          <div class="rt-dot"></div>Live
+        </div>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="var(--text2)">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+          </svg>
+          <input type="text" placeholder="Search tasks..." id="search-input" oninput="renderTasks()"/>
+        </div>
+        <button class="btn-add" onclick="openModal()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          New task
+        </button>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card c-accent">
+          <div class="stat-label">Total</div>
+          <div class="stat-val" id="st-total">0</div>
+          <div class="stat-sub">tasks created</div>
+        </div>
+        <div class="stat-card c-green">
+          <div class="stat-label">Done</div>
+          <div class="stat-val" id="st-done">0</div>
+          <div class="stat-sub">completed</div>
+        </div>
+        <div class="stat-card c-amber">
+          <div class="stat-label">In Progress</div>
+          <div class="stat-val" id="st-prog">0</div>
+          <div class="stat-sub">in progress</div>
+        </div>
+        <div class="stat-card c-red">
+          <div class="stat-label">Overdue</div>
+          <div class="stat-val" id="st-over">0</div>
+          <div class="stat-sub">past due date</div>
+        </div>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filters-row">
+        <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-btn" onclick="setFilter('todo', this)">To do</button>
+        <button class="filter-btn" onclick="setFilter('inprogress', this)">In progress</button>
+        <button class="filter-btn" onclick="setFilter('done', this)">Done</button>
+        <button class="filter-btn" onclick="setFilter('high', this)">High priority</button>
+        <select class="sort-sel" id="sort-sel" onchange="renderTasks()">
+          <option value="created">Newest first</option>
+          <option value="due">Due date</option>
+          <option value="priority">Priority</option>
+          <option value="title">A–Z</option>
+        </select>
+      </div>
+
+      <!-- TASK LIST -->
+      <div class="task-area" id="task-area"></div>
+    </main>
+  </div>
+</div>
+
+<!-- ==================== MODAL ==================== -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="handleBackdropClick(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-title">New task</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="field">
+      <label>Title *</label>
+      <input type="text" id="f-title" placeholder="What needs to be done?"/>
+    </div>
+    <div class="field">
+      <label>Description</label>
+      <textarea id="f-desc" placeholder="Add more details..."></textarea>
+    </div>
+    <div class="modal-row">
+      <div class="field">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="todo">To do</option>
+          <option value="inprogress">In progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Priority</label>
+        <select id="f-priority">
+          <option value="low">Low</option>
+          <option value="med">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="field">
+        <label>Category</label>
+        <select id="f-cat">
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Urgent">Urgent</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Due date</label>
+        <input type="date" id="f-due"/>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveTask()">Save task</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
